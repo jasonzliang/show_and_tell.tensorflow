@@ -2,3 +2,5 @@
 *.npy
 *.tfmodel
 model-*
+.tags
+.tags_*
