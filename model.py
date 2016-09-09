@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
 import math
-import os
+import os, sys, glob
 import tensorflow as tf
 import numpy as np
 import pandas as pd
@@ -33,7 +33,7 @@ class Caption_Generator():
 
         self.bemb = self.init_bias(dim_embed, name='bemb')
 
-        self.lstm = tf.nn.rnn_cell.BasicLSTMCell(dim_hidden)
+        self.lstm = tf.nn.rnn_cell.BasicLSTMCell(dim_hidden, state_is_tuple=False)
 
         #self.encode_img_W = self.init_weight(dim_image, dim_hidden, name='encode_img_W')
         self.encode_img_W = tf.Variable(tf.random_uniform([dim_image, dim_hidden], -0.1, 0.1), name='encode_img_W')
@@ -274,6 +274,7 @@ def read_image(path):
 
 
 def test_tf(test_image_path=None, model_path='./models/model-72', maxlen=30):
+    tf.reset_default_graph()
     with open(vgg_path) as f:
         fileContent = f.read()
         graph_def = tf.GraphDef()
@@ -286,6 +287,7 @@ def test_tf(test_image_path=None, model_path='./models/model-72', maxlen=30):
     n_words = len(ixtoword)
 
     image_val = read_image(test_image_path)
+    # print image_val.shape
     sess = tf.InteractiveSession()
 
     caption_generator = Caption_Generator(
@@ -313,6 +315,16 @@ def test_tf(test_image_path=None, model_path='./models/model-72', maxlen=30):
     generated_words = generated_words[:punctuation]
     generated_sentence = ' '.join(generated_words)
     print generated_sentence
+    return generated_sentence
+
+def test_tf_dir(image_dir, use_cache=True):
+    for image_path in glob.glob(image_dir + "/*.jpg") + glob.glob(image_dir + "/*.jpeg"):
+        print "generating caption for image: %s" % image_path
+        if os.path.exists(image_path[:-4] + ".txt") \
+            and os.path.getsize(image_path[:-4] + ".txt") > 0 and use_cache is True:
+            continue
+        with open(image_path[:-4] + ".txt", 'wb') as f:
+            f.write(test_tf(image_path))
 
 if __name__ == "__main__":
-    test_tf(test_image_path="acoustic-guitar-player.jpg")
+    test_tf_dir(sys.argv[1])
