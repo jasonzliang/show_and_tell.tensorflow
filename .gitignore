@@ -4,3 +4,4 @@
 model-*
 .tags
 .tags_*
+.DS_Store
