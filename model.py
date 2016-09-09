@@ -253,8 +253,7 @@ def test(test_feat='./guitar_player.npy', model_path='./models/tensorflow/model-
            n_words=n_words)
 
     image, generated_words = caption_generator.build_generator(maxlen=maxlen)
-    # 이 부분이 존나 중요함. 계속 caption_generator를 가져온 뒤 바로 restore를 했었는데,
-    # TensorFlow의 LSTM은 call을 한 뒤에 weight가 만들어지기 때문에 build_generator보다 뒤쪽에서 restore를 해야 함.
+
     saver = tf.train.Saver()
     saver.restore(sess, model_path)
 
@@ -305,7 +304,7 @@ def test_tf(test_image_path=None, model_path='./models/model-72', maxlen=30):
     saver = tf.train.Saver()
     saver.restore(sess, model_path)
 
-    generated_word_index= sess.run(generated_words, feed_dict={fc7_tf:fc7})
+    generated_word_index = sess.run(generated_words, feed_dict={fc7_tf:fc7})
     generated_word_index = np.hstack(generated_word_index)
 
     generated_words = [ixtoword[x] for x in generated_word_index]
