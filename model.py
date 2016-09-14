@@ -33,7 +33,7 @@ class Caption_Generator():
 
         self.bemb = self.init_bias(dim_embed, name='bemb')
 
-        self.lstm = tf.nn.rnn_cell.BasicLSTMCell(dim_hidden, state_is_tuple=False)
+        self.lstm = tf.nn.rnn_cell.BasicLSTMCell(dim_hidden)
 
         #self.encode_img_W = self.init_weight(dim_image, dim_hidden, name='encode_img_W')
         self.encode_img_W = tf.Variable(tf.random_uniform([dim_image, dim_hidden], -0.1, 0.1), name='encode_img_W')
